@@ -1,0 +1,134 @@
+#!name=Claude All Services Proxy v3 (2026-10-10)
+#!desc=Maximal Claude/Anthropic overlay: iOS, web, desktop, Code, Artifacts, auth, telemetry, supported third parties. Shared-service traffic may also be proxied; no MITM.
+#!author=ChatGPT
+
+# IMPORT: disable earlier Claude modules, enable this module; active policy PROXY must exist.
+# NOTES: Includes non-iOS related services and third-party shared domains deliberately.
+# IMPORTANT: Domain routes on the phone cannot govern Anthropic server-side tool egress.
+# WARNING: Wide Google/GitHub/Stripe/Microsoft/connector rules also redirect other apps.
+# IP 160.79.104.0/21 is officially OUTBOUND-only; included only for maximal request, not required by Claude iOS.
+# NTP is deliberately excluded: NTP supplies UTC; it does not reveal system timezone.
+
+[Rule]
+
+# --- Anthropic / Claude primary and branded ecosystem (including all v2) ---
+DOMAIN-SUFFIX,anthropic.com,PROXY
+DOMAIN-SUFFIX,claude.ai,PROXY
+DOMAIN-SUFFIX,claude.com,PROXY
+DOMAIN-SUFFIX,claude.app,PROXY
+DOMAIN-SUFFIX,claudeusercontent.com,PROXY
+DOMAIN-SUFFIX,claudemcpclient.com,PROXY
+DOMAIN-SUFFIX,claudemcpcontent.com,PROXY
+DOMAIN-SUFFIX,clau.de,PROXY
+DOMAIN-SUFFIX,modelcontextprotocol.io,PROXY
+DOMAIN,anthropic.auth0.com,PROXY
+DOMAIN,anthropic.com.cdn.cloudflare.net,PROXY
+DOMAIN,servd-anthropic-website.b-cdn.net,PROXY
+DOMAIN,anthropic-com.ghost.io,PROXY
+DOMAIN-KEYWORD,anthropic,PROXY
+DOMAIN-KEYWORD,claude,PROXY
+
+# --- Statsig SDK / experiment and fallback endpoints (official Statsig inventory) ---
+DOMAIN-SUFFIX,statsigapi.net,PROXY
+DOMAIN-SUFFIX,statsigcdn.com,PROXY
+DOMAIN-SUFFIX,featuregates.org,PROXY
+DOMAIN-SUFFIX,featureassets.org,PROXY
+DOMAIN-SUFFIX,assetsconfigcdn.org,PROXY
+DOMAIN-SUFFIX,prodregistryv2.org,PROXY
+DOMAIN-SUFFIX,beyondwickedmapping.org,PROXY
+DOMAIN,api.statsig.com,PROXY
+DOMAIN,api.statsigcdn.com,PROXY
+DOMAIN,console.statsig.com,PROXY
+DOMAIN,cdn.console.statsig.com,PROXY
+DOMAIN,console.statsigcdn.com,PROXY
+DOMAIN,events.statsigapi.net,PROXY
+DOMAIN,cloudflare-dns.com,PROXY
+DOMAIN,idliststorage.blob.core.windows.net,PROXY
+DOMAIN,cdn.growthbook.io,PROXY
+
+# --- Crash monitoring / anti-fraud / analytics / customer support ---
+DOMAIN-SUFFIX,sentry.io,PROXY
+DOMAIN-SUFFIX,datadoghq.com,PROXY
+DOMAIN-SUFFIX,datadoghq.eu,PROXY
+DOMAIN-SUFFIX,sift.com,PROXY
+DOMAIN-SUFFIX,intercom.io,PROXY
+DOMAIN-SUFFIX,intercomcdn.com,PROXY
+DOMAIN-SUFFIX,intercom.com,PROXY
+DOMAIN,browser-intake-us5-datadoghq.com,PROXY
+DOMAIN,http-intake.logs.us5.datadoghq.com,PROXY
+DOMAIN,cdn.usefathom.com,PROXY
+DOMAIN-KEYWORD,datadog,PROXY
+DOMAIN-KEYWORD,sentry,PROXY
+DOMAIN-KEYWORD,sift,PROXY
+
+# --- Authentication / anti-bot / sign-in (some hosts are shared) ---
+DOMAIN,challenges.cloudflare.com,PROXY
+DOMAIN,accounts.google.com,PROXY
+DOMAIN,oauth2.googleapis.com,PROXY
+DOMAIN,accounts.googleusercontent.com,PROXY
+DOMAIN,apis.google.com,PROXY
+DOMAIN-SUFFIX,googleapis.com,PROXY
+DOMAIN-SUFFIX,googleusercontent.com,PROXY
+DOMAIN-SUFFIX,gstatic.com,PROXY
+DOMAIN,login.microsoftonline.com,PROXY
+DOMAIN,graph.microsoft.com,PROXY
+DOMAIN,entra.microsoft.com,PROXY
+DOMAIN,appsforoffice.microsoft.com,PROXY
+
+# --- Artifact viewer external fonts and JS CDN (explicit Anthropic documents) ---
+DOMAIN,fonts.googleapis.com,PROXY
+DOMAIN,fonts.gstatic.com,PROXY
+DOMAIN,cdnjs.cloudflare.com,PROXY
+DOMAIN,cdn.jsdelivr.net,PROXY
+DOMAIN,cdn.tailwindcss.com,PROXY
+DOMAIN,code.jquery.com,PROXY
+DOMAIN,unpkg.com,PROXY
+
+# --- Claude Code / GitHub / plugin marketplace / metadata and downloads ---
+DOMAIN-SUFFIX,github.com,PROXY
+DOMAIN-SUFFIX,githubusercontent.com,PROXY
+DOMAIN-SUFFIX,githubassets.com,PROXY
+DOMAIN-SUFFIX,github.io,PROXY
+DOMAIN,raw.githubusercontent.com,PROXY
+DOMAIN,storage.googleapis.com,PROXY
+DOMAIN,formulae.brew.sh,PROXY
+DOMAIN-SUFFIX,brew.sh,PROXY
+DOMAIN-SUFFIX,googlesource.com,PROXY
+DOMAIN,registry.npmjs.org,PROXY
+DOMAIN-SUFFIX,npmjs.org,PROXY
+DOMAIN-SUFFIX,npmjs.com,PROXY
+
+# --- Cloud file/code execution approved package repositories (Anthropic Help) ---
+DOMAIN-SUFFIX,pypi.org,PROXY
+DOMAIN-SUFFIX,pythonhosted.org,PROXY
+DOMAIN-SUFFIX,crates.io,PROXY
+DOMAIN,archive.ubuntu.com,PROXY
+DOMAIN,security.ubuntu.com,PROXY
+DOMAIN-SUFFIX,yarnpkg.com,PROXY
+
+# --- Payments (Anthropic confirmed Stripe use; shared endpoints) ---
+DOMAIN-SUFFIX,stripe.com,PROXY
+DOMAIN-SUFFIX,stripe.network,PROXY
+DOMAIN-SUFFIX,link.com,PROXY
+
+# --- Potential human-initiated connector authorization frontends (shared providers) ---
+DOMAIN-SUFFIX,slack.com,PROXY
+DOMAIN-SUFFIX,notion.so,PROXY
+DOMAIN-SUFFIX,notion.site,PROXY
+DOMAIN-SUFFIX,linear.app,PROXY
+DOMAIN-SUFFIX,figma.com,PROXY
+DOMAIN-SUFFIX,dropbox.com,PROXY
+DOMAIN-SUFFIX,box.com,PROXY
+
+# --- Official Anthropic inbound ranges, outbound-only expansion and ASN/BGP ---
+IP-CIDR,160.79.104.0/23,PROXY,no-resolve
+IP-CIDR,160.79.104.0/21,PROXY,no-resolve
+IP-CIDR6,2607:6bc0::/48,PROXY,no-resolve
+IP-CIDR6,2607:6bc0:11::/48,PROXY,no-resolve
+IP-ASN,399358,PROXY,no-resolve
+
+# --- Additional original v2 exact matches (preserved) ---
+DOMAIN,featureassets.org,PROXY
+DOMAIN,assetsconfigcdn.org,PROXY
+DOMAIN,prodregistryv2.org,PROXY
+DOMAIN,beyondwickedmapping.org,PROXY
