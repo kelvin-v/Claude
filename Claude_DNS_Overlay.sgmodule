@@ -1,0 +1,15 @@
+#!name=Claude DNS Overlay
+#!desc=DNS overlay for Johnshall Shadowrocket config: proxied DoH for general lookups, domestic DoH for DIRECT, no system DNS fallback.
+#!author=ChatGPT
+
+# DNS parameters only. Does not change routing rules or enable IPv6.
+# Proxied domain connections normally resolve at the proxy endpoint.
+# Shared-device DNS settings affect other apps too; this is not an app-specific DNS override.
+# The fallback DNS below is domestic DoH for resilience, NOT a no-leak guarantee.
+# Disable other DNS override modules to avoid conflicting [General] values.
+
+[General]
+dns-server = https://dns.google/dns-query#proxy,https://cloudflare-dns.com/dns-query#proxy
+direct-dns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query
+fallback-dns-server = https://dns.alidns.com/dns-query
+dns-direct-system = false
