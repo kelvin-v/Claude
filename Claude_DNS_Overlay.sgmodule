@@ -12,6 +12,8 @@
 # On direct DoH failure, fallback DoH through proxy could affect domestic CDN choices.
 # This does not enforce per-app VPN, intercept every app DoH, or guarantee absolute zero DNS leaks.
 # Do not enable another module overriding these DNS keys.
+# Reject UDP instead of DIRECT fallback if a chosen proxy cannot forward UDP.
+# This does not alter flows that already match DIRECT and does not guarantee per-app fail-closed.
 
 [General]
 dns-server = https://dns.google/dns-query#proxy,https://cloudflare-dns.com/dns-query#proxy
@@ -21,3 +23,4 @@ proxy-dns-server = tls://223.5.5.5
 dns-direct-system = false
 dns-fallback-system = false
 dns-direct-fallback-proxy = false
+udp-policy-not-supported-behaviour = REJECT
