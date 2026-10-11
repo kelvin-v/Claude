@@ -23,4 +23,6 @@ proxy-dns-server = tls://223.5.5.5
 dns-direct-system = false
 dns-fallback-system = false
 dns-direct-fallback-proxy = false
+# Disable DNS SVCB (Type 64) and HTTPS (Type 65) queries in Shadowrocket.
+allow-dns-svcb = false
 udp-policy-not-supported-behaviour = REJECT
