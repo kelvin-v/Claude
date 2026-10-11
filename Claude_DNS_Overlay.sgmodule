@@ -1,20 +1,25 @@
 #!name=Claude DNS Overlay
-#!desc=China-first encrypted DNS for Johnshall split routing; remote proxy-domain resolution retained; system DNS fallback and unsupported UDP direct fallback disabled.
+#!desc=Split DNS hardening for Johnshall: proxy DoH for fallback/unknown, domestic DoH for DIRECT, encrypted node DNS bootstrap; no implicit system fallback.
 #!author=ChatGPT
 
-# DNS performance revision 2026-10-11.
-# Domestic app slowdown was observed with proxied Google/Cloudflare DoH, and cleared when this overlay was disabled.
-# Keep DoH for default, DIRECT and fallback DNS; no overseas resolver on the normal lookup path.
-# Proxy-routed domains are generally resolved by the proxy server, but device-specific behavior needs log validation.
-# Node bootstrap uses normal default encrypted DNS, not a separate possibly blocked DoT/853 connection.
-# DNS provider can still see locally resolved names. This does not guarantee a zero-DNS-leak device.
-# Retain current Claude proxy and IPv6 Leak Guard modules; no routing rules are changed here.
-# IMPORTANT: If performance or Claude connectivity worsens, disable this module and retest.
+# Split-DNS policy (2026-10-10): preserves China DIRECT and existing Claude rules.
+# Proxied Claude-domain requests normally resolve at the proxy endpoint.
+# Normal DIRECT destinations: domestic AliDNS and DNSPod DoH (direct).
+# Unclassified DNS + fallback: DoH over the selected proxy.
+# Proxy-node bootstrap: direct encrypted DNS-over-TLS to 223.5.5.5:853, without a resolver hostname dependency.
+# This *does* reveal the node host name to the domestic resolver (not to a plaintext ISP DNS hop).
+# If local networks block TCP/853, the node may fail to connect; revert to the previous module commit.
+# On direct DoH failure, fallback DoH through proxy could affect domestic CDN choices.
+# This does not enforce per-app VPN, intercept every app DoH, or guarantee absolute zero DNS leaks.
+# Do not enable another module overriding these DNS keys.
+# Reject UDP instead of DIRECT fallback if a chosen proxy cannot forward UDP.
+# This does not alter flows that already match DIRECT and does not guarantee per-app fail-closed.
 
 [General]
-dns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query
+dns-server = https://dns.google/dns-query#proxy,https://cloudflare-dns.com/dns-query#proxy
 direct-dns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query
-fallback-dns-server = https://dns.alidns.com/dns-query,https://doh.pub/dns-query
+fallback-dns-server = https://cloudflare-dns.com/dns-query#proxy
+proxy-dns-server = tls://223.5.5.5
 dns-direct-system = false
 dns-fallback-system = false
 dns-direct-fallback-proxy = false
