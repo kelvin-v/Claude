@@ -1,0 +1,21 @@
+#!name=IPv6 Leak Guard (Fail Closed)
+#!desc=Opt-in IPv6 fail-closed overlay for Johnshall split routing. Route all IPv6 addresses to REJECT, preserving IPv4 split policies. Verify on iPhone before long-term use.
+#!author=ChatGPT
+
+# PURPOSE: prevent actual public IPv6 connections from being sent directly in "Configuration" mode.
+# This does NOT fix misrouted IPv4, identify which app generated the request, or guarantee all system traffic is captured.
+# Enables IPv6 processing so the IPv6 rejection rule can be evaluated.
+# IPv6-only destinations and some NAT64/IPv6-only mobile networks will stop working.
+# Keep "Include All Networks" enabled if available; keep "Disable STUN" for WebRTC privacy.
+# Switch Shadowrocket Global Routing to Configuration mode; check iPhone tests after connecting.
+# The rule below can cause DNS evaluation for domain requests; existing DNS overlay still governs resolver settings.
+# Disable this module immediately if cellular/Wi-Fi connection, Apple services, or Claude break.
+# This module does not modify Johnshall, Claude v3, or your DNS overlay.
+
+[General]
+ipv6 = true
+prefer-ipv6 = false
+
+[Rule]
+# Reject every IPv6 target; the application may retry an IPv4 address.
+IP-CIDR6,::/0,REJECT
