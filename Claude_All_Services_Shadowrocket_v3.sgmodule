@@ -16,6 +16,7 @@ DOMAIN-SUFFIX,anthropic.com,PROXY
 DOMAIN-SUFFIX,claude.ai,PROXY
 DOMAIN-SUFFIX,claude.com,PROXY
 DOMAIN-SUFFIX,claude.app,PROXY
+DOMAIN-SUFFIX,claude.dev,PROXY
 DOMAIN-SUFFIX,claudeusercontent.com,PROXY
 DOMAIN-SUFFIX,claudemcpclient.com,PROXY
 DOMAIN-SUFFIX,claudemcpcontent.com,PROXY
