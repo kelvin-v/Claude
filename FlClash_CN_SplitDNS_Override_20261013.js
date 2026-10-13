@@ -72,6 +72,11 @@ const main = (config) => {
       type: "http", behavior: "domain", format: "mrs", interval: 86400, proxy: target,
       url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs",
       path: "./ruleset/kelvin-cn-full.mrs"
+    },
+    KELVIN_CN_IP: {
+      type: "http", behavior: "ipcidr", format: "mrs", interval: 86400, proxy: target,
+      url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs",
+      path: "./ruleset/kelvin-cn-ip.mrs"
     }
   };
 
@@ -91,6 +96,9 @@ const main = (config) => {
     ...rejected, ...overseas, "RULE-SET,KELVIN_CLAUDE," + target, "DOMAIN-SUFFIX,cn,DIRECT",
     "RULE-SET,KELVIN_CN_CUSTOM,DIRECT",
     "RULE-SET,KELVIN_CN_FULL,DIRECT",
+    // Chinese mainland IPv4/IPv6 ranges: match an already-known destination IP only;
+    // do not trigger DNS lookup merely to evaluate this route.
+    "RULE-SET,KELVIN_CN_IP,DIRECT,no-resolve",
     ...remain, "GEOIP,CN,DIRECT,no-resolve", "MATCH," + target
   ];
   config.rules = [...new Set(rules)];
