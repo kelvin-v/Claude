@@ -4,7 +4,7 @@
 
 ## 结论
 
-iOS Shadowrocket 的 .sgmodule **不能直接导入** FlClash；Mihomo 使用独立的 YAML/JS 配置。为避免让用户重新录入 Oregon/AWS 节点，采用 **一份 FlClash 覆写脚本** + 自动引用的 2 个规则集。不会上传/包含现有节点凭证。FlClash URL 导入脚本后，还需手动关联现有订阅并关闭 App 自身的 DNS 覆写。
+iOS Shadowrocket 的 .sgmodule **不能直接导入** FlClash；Mihomo 使用独立的 YAML/JS 配置。为避免让用户重新录入 Oregon/AWS 节点，采用 **一份 FlClash 覆写脚本** + 自动引用的 3 个规则集。不会上传/包含现有节点凭证。FlClash URL 导入脚本后，还需手动关联现有订阅并关闭 App 自身的 DNS 覆写。
 
 ## 可复制的唯一导入 URL
 
@@ -16,6 +16,7 @@ https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_CN_SplitDNS_Overr
 
 - 520 个国内常用/头条字节域名：https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_CN_Custom_Domains_20261013.yaml
 - 广覆盖国内域名库（MetaCubeX MRS）：https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
+- 从现有 Shadowrocket Claude 专项模块转换的 101 条 Mihomo 经典规则：https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_Claude_Existing_Rules_20261013.yaml
 
 ## Windows 11 导入步骤
 
@@ -24,7 +25,7 @@ https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_CN_SplitDNS_Overr
 3. 新建脚本，选择「URL 导入/从 URL 导入」，粘贴上面的 `.js` 链接，保存。不要误把 JS 当订阅 YAML 添加。
 4. 返回「配置」，在**当前正在使用的订阅**右侧菜单「更多/⋮ → 覆写」，切换为**脚本模式**并选中这个脚本。
 5. 「工具 → 进阶配置 → DNS」如开启「DNS 覆写/覆盖 DNS」，请将此覆写关闭，防止 FlClash 自身 DNS 序列化盖掉脚本 DNS。注意不要关闭 Mihomo 脚本生成的 `dns.enable`。
-6. 重新选择该订阅或刷新使覆写生效，打开 FlClash 的「预览/配置预览」与日志，确保 `rule-providers` 已加载 `KELVIN_CN_CUSTOM`、`KELVIN_CN_FULL`；`rules` 最末为 `MATCH,<实际代理组>`，DNS 的直连解析器为 AliDNS/DNSPod，普通解析器为 Google/Cloudflare DoH 且带 `#<代理组>`。
+6. 重新选择该订阅或刷新使覆写生效，打开 FlClash 的「预览/配置预览」与日志，确保 `rule-providers` 已加载 `KELVIN_CN_CUSTOM`、`KELVIN_CN_FULL`、`KELVIN_CLAUDE`；`rules` 最末为 `MATCH,<实际代理组>`，DNS 的直连解析器为 AliDNS/DNSPod，普通解析器为 Google/Cloudflare DoH 且带 `#<代理组>`。
 7. 若需要整个 Windows 系统（包括部分非 HTTP 软件）由 FlClash 接管，确认 TUN 模式已启用且工作正常；仅使用“系统代理”无法保证所有系统流量受控。
 8. 分别测试 `douyin.com`、`toutiao.com`、`taobao.com` 的连接为 DIRECT，以及 `claude.ai`、`chatgpt.com`、`tiktok.com` 和未知国外域名为代理。查看 DNS 运行日志核对解析流向。若预览报错或无法联网，**先取消该订阅的覆写脚本并恢复原 DNS 覆写设置**，节点保持不变。
 
@@ -32,7 +33,7 @@ https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_CN_SplitDNS_Overr
 
 - 继承原配置的节点、代理组、TUN 开关、入站端口；若没有显式 PROXY 组，尝试挑选可用的非直连策略组。仅原始节点而无策略组时自动创建 `KELVIN-Proxy` 选择组；完全没有代理节点时不改写。
 - 前置保留源规则中的 REJECT 广告拦截（不保证与所有复杂规则完全一致）。
-- 海外 AI / Google / GitHub / TikTok / CapCut 等关键域名优先走选定代理。
+- 海外 AI / Google / GitHub / TikTok / CapCut 等关键域名优先走选定代理；另以 `KELVIN_CLAUDE` 经典规则集移植既有的 Claude v3 专项规则（包括第三方共享服务）。
 - 国内 `.cn`、520 个定制域名和 MetaCubeX 中国域名集合优先 DIRECT；现有非兜底规则之后继续匹配，最后由 `MATCH,<代理组>` 代理。
 - `direct-nameserver` / CN `nameserver-policy`：AliDNS/DNSPod DoH，带 `#DIRECT`。
 - `nameserver`：Google/Cloudflare DoH，绑定选定代理组；`proxy-server-nameserver` 独立国内 DoH 做节点自举，`fallback` 清空防止并发混合国外/国内回退。
