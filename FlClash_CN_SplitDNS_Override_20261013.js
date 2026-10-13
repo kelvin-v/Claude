@@ -58,6 +58,11 @@ const main = (config) => {
   const oldProviders = config["rule-providers"] && typeof config["rule-providers"] === "object" ? config["rule-providers"] : {};
   config["rule-providers"] = {
     ...oldProviders,
+    KELVIN_CLAUDE: {
+      type: "http", behavior: "classical", format: "yaml", interval: 86400, proxy: target,
+      url: "https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_Claude_Existing_Rules_20261013.yaml",
+      path: "./ruleset/kelvin-claude-20261013.yaml"
+    },
     KELVIN_CN_CUSTOM: {
       type: "http", behavior: "domain", format: "yaml", interval: 86400, proxy: target,
       url: "https://raw.githubusercontent.com/kelvin-v/Claude/main/FlClash_CN_Custom_Domains_20261013.yaml",
@@ -83,7 +88,7 @@ const main = (config) => {
     "byteplus.com", "bytedance.com", "bytedance.net", "bytedance.org"
   ].map(d => "DOMAIN-SUFFIX," + d + "," + target);
   const rules = [
-    ...rejected, ...overseas, "DOMAIN-SUFFIX,cn,DIRECT",
+    ...rejected, ...overseas, "RULE-SET,KELVIN_CLAUDE," + target, "DOMAIN-SUFFIX,cn,DIRECT",
     "RULE-SET,KELVIN_CN_CUSTOM,DIRECT",
     "RULE-SET,KELVIN_CN_FULL,DIRECT",
     ...remain, "GEOIP,CN,DIRECT,no-resolve", "MATCH," + target
