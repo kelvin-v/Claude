@@ -1,5 +1,5 @@
 #!name=中国国内服务直连·全面版 2026-10-13
-#!desc=国内常用服务/头条字节系直连；配合 Claude_DNS_Overlay 的 DIRECT/PROXY 分流解析；保留海外 Claude/AI 规则与 IPv6 策略。
+#!desc=中国大陆域名 + IPv4 网段直连，国外与未知默认代理；配合原双路径 DNS、Claude 与 IPv6 模块。
 #!author=kelvin-v / ChatGPT
 
 # 配合本仓库 Claude_DNS_Overlay.sgmodule。两者同时启用，但不要同时启用两个 DNS 覆写模块。
@@ -7,7 +7,7 @@
 # 规则只有 DIRECT/PROXY，无 MITM、脚本、重写或 DNS 覆写。
 # ByteDance 仅从 blackmatrix7/ios_rule_script 2026-10-04 规则中提取 DOMAIN / DOMAIN-SUFFIX，忽略 TikTok UA 和 IP。
 # ByteDance 共享的 bytedance.com/net/org 不强制直连，以减少影响海外 TikTok/CapCut 的可能。
-# 其他行业采用第三方持续更新 RULE-SET，首次加载需要能访问 raw.githubusercontent.com。
+# 行业域名与中国大陆 IPv4 网段均使用第三方 RULE-SET，首次加载需要能够访问 raw.githubusercontent.com。
 # 使用 Configuration 路由模式；命中 DIRECT 走直连 DNS，PROXY/未知按已有 DNS 模块走代理。
 # 规则集由第三方维护；若与特定跨境服务冲突，应在本模块前设置更具体 PROXY 例外并重新验证。
 
@@ -600,6 +600,13 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/CCB/CCB.list,DIRECT
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/CMB/CMB.list,DIRECT
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/BOCOM/BOCOM.list,DIRECT
+
+# 中国大陆公网 IPv4 网段优先直连（blackmatrix7 ChinaIPs，IP-CIDR 自带 no-resolve）
+# 此规则仅对已知的目标 IP 匹配；不会为了判定未知域名而进行额外的 DNS 解析。
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/ChinaIPs/ChinaIPs.list,DIRECT
+
+# 使用 Shadowrocket 本地 GeoIP 库补充尚未被以上网段列表覆盖的中国大陆 IP。
+GEOIP,CN,DIRECT,no-resolve
 
 # 其他规则匹配失败时走已选择的代理节点（须保持主配置的专项规则优先）
 FINAL,PROXY
