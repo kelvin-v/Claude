@@ -1,0 +1,22 @@
+#!name=番茄小说·高级净化（可选 MITM）2026-10-15
+#!desc=仅针对番茄相关广告素材和广告接口的 URL 路径进行拦截；与国内直连极速版配合，必须手动启用 HTTPS MITM。
+#!author=kelvin-v / ChatGPT
+
+# 可选模块：基础版已经含 26 条广告服务器 REJECT；先单独测试基础版，再决定是否启用这里的 HTTPS MITM。
+# 本模块不添加 DNS / IP / FINAL / 代理重定向或大规模远程脚本。
+# HTTPS 连接只有在 Shadowrocket CA 已安装并受信任，且 App 未进行证书锁定时才能做 URL 路径匹配。
+# 不建议为 *.zijieapi.com、*.fqnovel.com、*.byteimg.com 全站开启 MITM；章节资源、登录等需要保留。
+# 注意：iOS 网络规则通常无法只限定“番茄小说”应用；匹配这些主机的其他字节系应用也可能受影响。
+
+[URL Rewrite]
+# 番茄相关穿山甲：广告素材路径（不拦截整个 pstatp.com 资源域名）
+^https?:\/\/[^\/]+\.pstatp\.com\/(?:obj|img)\/(?:ad-app-package|ad)\/.+ - reject
+^https?:\/\/[^\/]+\.pstatp\.com\/obj\/mosaic-legacy\/.+[?&]from=ad(?:&|$) - reject
+^https?:\/\/[^\/]+\.pstatp\.com\/bytecom\/resource\/track-log\/src\/.+ - reject
+# 广告分发接口：限制到 /api/ad/，不封锁整个 i.snssdk.com
+^https?:\/\/(?:i|i-hl|i-lq)\.snssdk\.com\/api\/ad(?:\/|\?|$).* - reject
+# 资源包路径：仅拦截单个已知广告相关端点；若 App 素材异常，请先停用本模块
+^https?:\/\/gurd\.snssdk\.com\/src\/server\/v3\/package(?:\/|\?|$).* - reject
+
+[MITM]
+hostname = %APPEND% *.pstatp.com,i.snssdk.com,i-hl.snssdk.com,i-lq.snssdk.com,gurd.snssdk.com
