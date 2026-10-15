@@ -1,5 +1,5 @@
 #!name=中国国内服务直连·极速版 2026-10-13
-#!desc=测试用精简分流：国内常见域名和内置 GeoIP CN 直连；ChatGPT/Claude 优先代理；不下载 43 组远程规则库。
+#!desc=国内静态域名与 GeoIP 直连 + 番茄广告专用拒绝规则；海外 AI 默认代理；无额外远程规则库或 MITM。
 #!author=kelvin-v / ChatGPT
 
 # 使用方式：先停用原“中国国内服务直连·全面版”，再单独启用此模块；不要同时开启两个版本。
@@ -8,6 +8,42 @@
 # 不包含 MITM、脚本、URL Rewrite 或 DNS 设置，也不依赖远程 RULE-SET。
 
 [Rule]
+# 番茄小说：精准广告服务器拦截（参考 DD-AD / XiaoQi，2026-10-15）
+# 必须排在字节系 DIRECT 规则之前，避免其被通用国内直连覆盖。
+# 以下广告联盟拦截按目标域名生效，也可能影响其他使用穿山甲的 App。
+# 仅选择广告主机；不拦截 p*-novel.byteimg.com、正文/封面/听书视频 CDN、
+# ib.snssdk.com、i.snssdk.com、gecko.zijieapi.com、tnc3 等功能端点。
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
+DOMAIN-SUFFIX,pangolin-dsp-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+DOMAIN,ad.zijieapi.com,REJECT
+DOMAIN,ad.toutiao.com,REJECT
+DOMAIN,pangolin.snssdk.com,REJECT
+DOMAIN,pangolin-lf.snssdk.com,REJECT
+DOMAIN,pangolin-hl.snssdk.com,REJECT
+DOMAIN,pangolin-lq.snssdk.com,REJECT
+DOMAIN,pangolin16.isnssdk.com,REJECT
+DOMAIN,pangolin16.sgsnssdk.com,REJECT
+DOMAIN,ads3-normal.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads3-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads3-normal-lq.zijieapi.com,REJECT
+DOMAIN,ads4-normal.zijieapi.com,REJECT
+DOMAIN,ads4-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads4-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads4-normal-lq.zijieapi.com,REJECT
+DOMAIN,ads5-normal.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lf.zijieapi.com,REJECT
+DOMAIN,ads5-normal-hl.zijieapi.com,REJECT
+DOMAIN,ads5-normal-lq.zijieapi.com,REJECT
+
+# 以下两个专门广告 SDK 静态资源子域已被 pglstatp-toutiao.com 包含，
+# 不必重复添加（留在注释中记录来源，便于今后维护）。
+# DOMAIN,lf3-ad-union-sdk.pglstatp-toutiao.com,REJECT
+# DOMAIN,lf6-ad-union-sdk.pglstatp-toutiao.com,REJECT
 # 显式海外 AI 优先代理，避免跨模块/主配置中宽泛的国内路由覆盖关键域名。
 DOMAIN-SUFFIX,chatgpt.com,PROXY
 DOMAIN-SUFFIX,openai.com,PROXY
