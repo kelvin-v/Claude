@@ -1,4 +1,4 @@
-#!name=中国国内服务直连·全面版 2026-10-13
+#!name=中国国内服务直连·全面版 2026-10-26
 #!desc=中国大陆域名 + IPv4 网段直连，国外与未知默认代理；配合原双路径 DNS、Claude 与 IPv6 模块。
 #!author=kelvin-v / ChatGPT
 
@@ -26,6 +26,11 @@ DOMAIN-SUFFIX,byteplus.com,PROXY
 DOMAIN-SUFFIX,bytedance.com,PROXY
 DOMAIN-SUFFIX,bytedance.net,PROXY
 DOMAIN-SUFFIX,bytedance.org,PROXY
+# 中国综合域名库有部分微软认证/Azure共享域名；保护原有海外认证及国际字节域名
+DOMAIN-SUFFIX,microsoftonline.com,PROXY
+DOMAIN-SUFFIX,windows.net,PROXY
+DOMAIN-SUFFIX,tiktokd.net,PROXY
+DOMAIN-SUFFIX,tiktokd.org,PROXY
 
 # 常见中国域名通用直连（不添加 .ms 等可能影响其他地区的 TLD）
 DOMAIN-SUFFIX,cn,DIRECT
@@ -552,6 +557,9 @@ DOMAIN-SUFFIX,zjurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.com,DIRECT
 
+# 国内综合纯域名库：补齐未被静态及行业分类覆盖的域名；不引入China.list中宽泛的关键词/UA。
+DOMAIN-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/China/China_Domain.list,DIRECT
+
 # 上游行业分类规则集（定期由 blackmatrix7 维护，支持新域名扩充）
 # 社交通信
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/Tencent/Tencent.list,DIRECT
@@ -605,8 +613,8 @@ RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/r
 # 此规则仅对已知的目标 IP 匹配；不会为了判定未知域名而进行额外的 DNS 解析。
 RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/ChinaIPs/ChinaIPs.list,DIRECT
 
-# 使用 Shadowrocket 本地 GeoIP 库补充尚未被以上网段列表覆盖的中国大陆 IP。
-GEOIP,CN,DIRECT,no-resolve
+# 使用 Shadowrocket GeoIP 兜底；为未命中的域名解析目标IPv4以识别中国大陆网站（可能增加DNS查询）。
+GEOIP,CN,DIRECT
 
 # 其他规则匹配失败时走已选择的代理节点（须保持主配置的专项规则优先）
 FINAL,PROXY
