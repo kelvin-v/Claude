@@ -1,4 +1,4 @@
-// FlClash / Mihomo script override (2026-10-13).
+// FlClash / Mihomo script override (updated 2026-10-26).
 // Apply to an EXISTING subscription using Script Override; not a standalone YAML profile.
 // Retains existing proxy nodes, groups, and TUN state. Requires FlClash DNS Override disabled.
 const main = (config) => {
@@ -85,21 +85,55 @@ const main = (config) => {
   // Keep user ad/tracker blocking ahead of new direct routing.
   const rejected = keep.filter(r => /,(REJECT|REJECT-DROP)(,|$)/.test(r));
   const remain = keep.filter(r => !rejected.includes(r));
+  // Parity with Shadowrocket CN Direct Fast: keep targeted Fanqie/Pangolin ad hosts blocked.
+  // Existing user REJECT rules and all node/group settings remain intact.
+  const fanqieBlocked = [
+    "DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT",
+    "DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT",
+    "DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT",
+    "DOMAIN-SUFFIX,pangolin-dsp-toutiao.com,REJECT",
+    "DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com,REJECT",
+    "DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT",
+    "DOMAIN,ad.zijieapi.com,REJECT",
+    "DOMAIN,ad.toutiao.com,REJECT",
+    "DOMAIN,pangolin.snssdk.com,REJECT",
+    "DOMAIN,pangolin-lf.snssdk.com,REJECT",
+    "DOMAIN,pangolin-hl.snssdk.com,REJECT",
+    "DOMAIN,pangolin-lq.snssdk.com,REJECT",
+    "DOMAIN,pangolin16.isnssdk.com,REJECT",
+    "DOMAIN,pangolin16.sgsnssdk.com,REJECT",
+    "DOMAIN,ads3-normal.zijieapi.com,REJECT",
+    "DOMAIN,ads3-normal-lf.zijieapi.com,REJECT",
+    "DOMAIN,ads3-normal-hl.zijieapi.com,REJECT",
+    "DOMAIN,ads3-normal-lq.zijieapi.com,REJECT",
+    "DOMAIN,ads4-normal.zijieapi.com,REJECT",
+    "DOMAIN,ads4-normal-lf.zijieapi.com,REJECT",
+    "DOMAIN,ads4-normal-hl.zijieapi.com,REJECT",
+    "DOMAIN,ads4-normal-lq.zijieapi.com,REJECT",
+    "DOMAIN,ads5-normal.zijieapi.com,REJECT",
+    "DOMAIN,ads5-normal-lf.zijieapi.com,REJECT",
+    "DOMAIN,ads5-normal-hl.zijieapi.com,REJECT",
+    "DOMAIN,ads5-normal-lq.zijieapi.com,REJECT"
+  ];
   const overseas = [
     "claude.ai", "anthropic.com", "claude.com", "openai.com", "chatgpt.com", "oaistatic.com",
     "google.com", "googleapis.com", "gstatic.com", "github.com", "githubusercontent.com",
     "dns.google", "cloudflare-dns.com", "tiktok.com", "tiktokv.com", "tiktokcdn.com",
     "tiktokcdn-us.com", "tiktokrow.com", "capcut.com", "capcut.net", "lemon8-app.com",
-    "byteplus.com", "bytedance.com", "bytedance.net", "bytedance.org"
+    "byteplus.com", "bytedance.com", "bytedance.net", "bytedance.org",
+    "microsoftonline.com", "windows.net", "tiktokd.net", "tiktokd.org"
   ].map(d => "DOMAIN-SUFFIX," + d + "," + target);
   const rules = [
-    ...rejected, ...overseas, "RULE-SET,KELVIN_CLAUDE," + target, "DOMAIN-SUFFIX,cn,DIRECT",
+    ...rejected, ...fanqieBlocked, ...overseas, "RULE-SET,KELVIN_CLAUDE," + target, "DOMAIN-SUFFIX,cn,DIRECT",
     "RULE-SET,KELVIN_CN_CUSTOM,DIRECT",
     "RULE-SET,KELVIN_CN_FULL,DIRECT",
     // Chinese mainland IPv4/IPv6 ranges: match an already-known destination IP only;
     // do not trigger DNS lookup merely to evaluate this route.
     "RULE-SET,KELVIN_CN_IP,DIRECT,no-resolve",
-    ...remain, "GEOIP,CN,DIRECT,no-resolve", "MATCH," + target
+    ...remain,
+    // Last-chance mainland IP decision for an unknown domain may trigger DNS resolution.
+    // Keep the large CN_IP rule-provider no-resolve to avoid extra premature DNS work.
+    "GEOIP,CN,DIRECT", "MATCH," + target
   ];
   config.rules = [...new Set(rules)];
   // No changes to TUN, incoming port, original groups or node secrets.
