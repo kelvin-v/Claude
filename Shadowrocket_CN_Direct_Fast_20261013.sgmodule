@@ -1,11 +1,12 @@
-#!name=中国国内服务直连·极速版 2026-10-13
-#!desc=国内静态域名与 GeoIP 直连 + 番茄广告专用拒绝规则；海外 AI 默认代理；无额外远程规则库或 MITM。
+#!name=中国国内服务直连·极速版 2026-10-26
+#!desc=国内静态域名+China_Domain补全与GeoIP直连，保留番茄去广告和海外AI代理；不改DNS/MITM。
 #!author=kelvin-v / ChatGPT
 
 # 使用方式：先停用原“中国国内服务直连·全面版”，再单独启用此模块；不要同时开启两个版本。
 # 保留 Claude DNS Overlay、Claude All Services Proxy v3 和当前节点设置不变。
-# GEOIP,CN,no-resolve：可识别已经获得的中国大陆目标 IP，但不会为未知域名强制额外解析；不保证所有未知国内域名直连。
-# 不包含 MITM、脚本、URL Rewrite 或 DNS 设置，也不依赖远程 RULE-SET。
+# GEOIP,CN 不再使用 no-resolve：未命中域名规则时，允许解析并判断是否为中国大陆 IPv4；可能增加 DNS 查询。
+# 只额外订阅一份公开 China_Domain 纯域名库；不加入可能误伤国际服务的中国规则关键词或 UA。
+# 不包含 MITM、脚本、URL Rewrite 或 DNS 设置。
 
 [Rule]
 # 番茄小说：精准广告服务器拦截（参考 DD-AD / XiaoQi，2026-10-15）
@@ -57,6 +58,12 @@ DOMAIN-SUFFIX,anthropic.com,PROXY
 DOMAIN-SUFFIX,claude.ai,PROXY
 DOMAIN-SUFFIX,claude.com,PROXY
 DOMAIN-SUFFIX,claudeusercontent.com,PROXY
+
+# 优先保护海外认证、Azure存储及国际字节域名（China_Domain会命中部分共享域名）
+DOMAIN-SUFFIX,microsoftonline.com,PROXY
+DOMAIN-SUFFIX,windows.net,PROXY
+DOMAIN-SUFFIX,tiktokd.net,PROXY
+DOMAIN-SUFFIX,tiktokd.org,PROXY
 
 # 原完整模块保留的 534 条静态域名规则（13 PROXY / 521 DIRECT）。
 DOMAIN-SUFFIX,tiktok.com,PROXY
@@ -594,8 +601,12 @@ DOMAIN-SUFFIX,zjurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.com,DIRECT
 
-# 小火箭本机 GeoIP 地理数据库：中国大陆 IP 直连；避免额外 19,228 条远程 CIDR 规则。
-GEOIP,CN,DIRECT,no-resolve
+# 补齐约 3,600 个国内纯域名后缀；保留本文件的全部静态规则与番茄广告 REJECT 优先级。
+DOMAIN-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/China/China_Domain.list,DIRECT
+
+# GeoIP 兜底：允许为漏网域名解析目标 IPv4 再判断 CN；可能增加 DNS 查询。
+# 使用既有 DNS Overlay，不更改 DNS、IPv6 或节点设置。
+GEOIP,CN,DIRECT
 
 # 其他未匹配流量默认代理。
 FINAL,PROXY
