@@ -13,6 +13,8 @@
 
 # --- Anthropic / Claude primary and branded ecosystem (including all v2) ---
 DOMAIN-SUFFIX,anthropic.com,PROXY
+DOMAIN-SUFFIX,ant.dev,PROXY
+DOMAIN-SUFFIX,antspace.dev,PROXY
 DOMAIN-SUFFIX,claude.ai,PROXY
 DOMAIN-SUFFIX,claude.com,PROXY
 DOMAIN-SUFFIX,claude.app,PROXY
