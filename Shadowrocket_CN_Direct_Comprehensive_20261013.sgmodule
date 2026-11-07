@@ -4,14 +4,24 @@
 
 # 配合本仓库 Claude_DNS_Overlay.sgmodule。两者同时启用，但不要同时启用两个 DNS 覆写模块。
 # 保留 Claude_All_Services_Shadowrocket_v3.sgmodule 和 Claude_IPv6_Leak_Guard.sgmodule 原样；勿启用旧 CN Direct 模块。
-# 规则只有 DIRECT/PROXY，无 MITM、脚本、重写或 DNS 覆写。
+# 常规分流为 DIRECT/PROXY，Tailnet 使用 TAILSCALE；无 MITM、脚本、重写或 DNS 覆写。
 # ByteDance 仅从 blackmatrix7/ios_rule_script 2026-10-04 规则中提取 DOMAIN / DOMAIN-SUFFIX，忽略 TikTok UA 和 IP。
 # ByteDance 共享的 bytedance.com/net/org 不强制直连，以减少影响海外 TikTok/CapCut 的可能。
 # 行业域名与中国大陆 IPv4 网段均使用第三方 RULE-SET，首次加载需要能够访问 raw.githubusercontent.com。
 # 使用 Configuration 路由模式；命中 DIRECT 走直连 DNS，PROXY/未知按已有 DNS 模块走代理。
 # 规则集由第三方维护；若与特定跨境服务冲突，应在本模块前设置更具体 PROXY 例外并重新验证。
 
+# 2026-11-07: 修复 Johnshall 主配置将 Tailscale 100.64.0.0/10 排除在 TUN 外的问题。
+# 其余旁路网段保留原样；不改变 DNS、节点及普通国内/国外分流。
+[General]
+tun-excluded-routes = 10.0.0.0/8,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,224.0.0.0/4,255.255.255.255/32,::1/128,::ffff:0:0/96,::ffff:0:0:0/96,64:ff9b::/96,64:ff9b:1::/48,100::/64,2001::/32,2001:20::/28,2001:db8::/32,2002::/16,3fff::/20,5f00::/16,fc00::/7,fe80::/10,ff00::/8
+bypass-tun = 10.0.0.0/8,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,192.0.2.0/24,192.88.99.0/24,192.168.0.0/16,198.18.0.0/15,198.51.100.0/24,203.0.113.0/24,233.252.0.0/24,224.0.0.0/4,255.255.255.255/32,::1/128,::ffff:0:0/96,::ffff:0:0:0/96,64:ff9b::/96,64:ff9b:1::/48,100::/64,2001::/32,2001:20::/28,2001:db8::/32,2002::/16,3fff::/20,5f00::/16,fc00::/7,fe80::/10,ff00::/8
+
 [Rule]
+# Tailnet 专线：先于国内 DIRECT / AI PROXY / FINAL 匹配。
+DOMAIN-SUFFIX,tail29cd41.ts.net,TAILSCALE
+IP-CIDR,100.85.58.109/32,TAILSCALE,no-resolve
+
 # 海外服务优先，避免字节生态共享域名误伤国际 App
 DOMAIN-SUFFIX,tiktok.com,PROXY
 DOMAIN-SUFFIX,tiktokv.com,PROXY
