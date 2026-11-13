@@ -1,4 +1,4 @@
-#!name=中国国内服务直连·极速版 2026-10-26
+#!name=中国国内服务直连·极速版 2026-11-13
 #!desc=国内静态域名+China_Domain补全与GeoIP直连，保留番茄去广告和海外AI代理；不改DNS/MITM。
 #!author=kelvin-v / ChatGPT
 
@@ -75,7 +75,7 @@ DOMAIN-SUFFIX,windows.net,PROXY
 DOMAIN-SUFFIX,tiktokd.net,PROXY
 DOMAIN-SUFFIX,tiktokd.org,PROXY
 
-# 原完整模块保留的 534 条静态域名规则（13 PROXY / 521 DIRECT）。
+# 保留原国内静态域名及国际服务专属代理规则。
 DOMAIN-SUFFIX,tiktok.com,PROXY
 DOMAIN-SUFFIX,tiktokv.com,PROXY
 DOMAIN-SUFFIX,tiktokcdn.com,PROXY
@@ -86,9 +86,6 @@ DOMAIN-SUFFIX,capcut.com,PROXY
 DOMAIN-SUFFIX,capcut.net,PROXY
 DOMAIN-SUFFIX,lemon8-app.com,PROXY
 DOMAIN-SUFFIX,byteplus.com,PROXY
-DOMAIN-SUFFIX,bytedance.com,PROXY
-DOMAIN-SUFFIX,bytedance.net,PROXY
-DOMAIN-SUFFIX,bytedance.org,PROXY
 DOMAIN-SUFFIX,cn,DIRECT
 DOMAIN-SUFFIX,10010.com,DIRECT
 DOMAIN-SUFFIX,10086.cn,DIRECT
@@ -610,6 +607,31 @@ DOMAIN-SUFFIX,zjgslb.com,DIRECT
 DOMAIN-SUFFIX,zjurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.com,DIRECT
+
+# 2026-11-13: 常规 Apple 系统、账户、App Store、iCloud 服务直连；放在静态国内域名规则之后。
+# 低优先级：上方已有的专用 PROXY / REJECT 优先；不改变节点、DNS 和其他模块。
+# 保留 Claude/ChatGPT 已有 Apple 校验端点，以及 iCloud Private Relay 的代理路径。
+DOMAIN,humb.apple.com,PROXY
+DOMAIN,mask.icloud.com,PROXY
+DOMAIN,mask-h2.icloud.com,PROXY
+DOMAIN,mask-api.icloud.com,PROXY
+DOMAIN-SUFFIX,apple.com,DIRECT
+DOMAIN-SUFFIX,apple.com.cn,DIRECT
+DOMAIN-SUFFIX,icloud.com,DIRECT
+DOMAIN-SUFFIX,icloud.com.cn,DIRECT
+DOMAIN-SUFFIX,icloud-content.com,DIRECT
+DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT
+DOMAIN-SUFFIX,apple-livephotoskit.com,DIRECT
+DOMAIN-SUFFIX,apple-dns.net,DIRECT
+DOMAIN-SUFFIX,cdn-apple.com,DIRECT
+DOMAIN-SUFFIX,mzstatic.com,DIRECT
+DOMAIN-SUFFIX,aaplimg.com,DIRECT
+DOMAIN-SUFFIX,apzones.com,DIRECT
+
+# 2026-11-13: 国内字节服务使用共享 bytedance 域名时优先直连；国际品牌专属域名仍在前面走 PROXY。
+DOMAIN-SUFFIX,bytedance.com,DIRECT
+DOMAIN-SUFFIX,bytedance.net,DIRECT
+DOMAIN-SUFFIX,bytedance.org,DIRECT
 
 # 补齐约 3,600 个国内纯域名后缀；保留本文件的全部静态规则与番茄广告 REJECT 优先级。
 DOMAIN-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/China/China_Domain.list,DIRECT
