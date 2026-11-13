@@ -1,4 +1,4 @@
-#!name=中国国内服务直连·全面版 2026-10-26
+#!name=中国国内服务直连·全面版 2026-11-13
 #!desc=中国大陆域名 + IPv4 网段直连，国外与未知默认代理；配合原双路径 DNS、Claude 与 IPv6 模块。
 #!author=kelvin-v / ChatGPT
 
@@ -6,7 +6,7 @@
 # 保留 Claude_All_Services_Shadowrocket_v3.sgmodule 和 Claude_IPv6_Leak_Guard.sgmodule 原样；勿启用旧 CN Direct 模块。
 # 常规分流为 DIRECT/PROXY，Tailnet 使用 TAILSCALE；无 MITM、脚本、重写或 DNS 覆写。
 # ByteDance 仅从 blackmatrix7/ios_rule_script 2026-10-04 规则中提取 DOMAIN / DOMAIN-SUFFIX，忽略 TikTok UA 和 IP。
-# ByteDance 共享的 bytedance.com/net/org 不强制直连，以减少影响海外 TikTok/CapCut 的可能。
+# ByteDance 共享的 bytedance.com/net/org 按直连偏好处理；TikTok/CapCut 等专属域名仍优先代理。
 # 行业域名与中国大陆 IPv4 网段均使用第三方 RULE-SET，首次加载需要能够访问 raw.githubusercontent.com。
 # 使用 Configuration 路由模式；命中 DIRECT 走直连 DNS，PROXY/未知按已有 DNS 模块走代理。
 # 规则集由第三方维护；若与特定跨境服务冲突，应在本模块前设置更具体 PROXY 例外并重新验证。
@@ -22,7 +22,7 @@ bypass-tun = 10.0.0.0/8,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192.0.0.0/24,19
 DOMAIN-SUFFIX,tail29cd41.ts.net,TAILSCALE
 IP-CIDR,100.85.58.109/32,TAILSCALE,no-resolve
 
-# 海外服务优先，避免字节生态共享域名误伤国际 App
+# 海外服务专属域名优先；字节共享域名在后部执行常规直连
 DOMAIN-SUFFIX,tiktok.com,PROXY
 DOMAIN-SUFFIX,tiktokv.com,PROXY
 DOMAIN-SUFFIX,tiktokcdn.com,PROXY
@@ -33,9 +33,6 @@ DOMAIN-SUFFIX,capcut.com,PROXY
 DOMAIN-SUFFIX,capcut.net,PROXY
 DOMAIN-SUFFIX,lemon8-app.com,PROXY
 DOMAIN-SUFFIX,byteplus.com,PROXY
-DOMAIN-SUFFIX,bytedance.com,PROXY
-DOMAIN-SUFFIX,bytedance.net,PROXY
-DOMAIN-SUFFIX,bytedance.org,PROXY
 # 中国综合域名库有部分微软认证/Azure共享域名；保护原有海外认证及国际字节域名
 DOMAIN-SUFFIX,microsoftonline.com,PROXY
 DOMAIN-SUFFIX,windows.net,PROXY
@@ -566,6 +563,31 @@ DOMAIN-SUFFIX,zjgslb.com,DIRECT
 DOMAIN-SUFFIX,zjurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.cn,DIRECT
 DOMAIN-SUFFIX,zlinkurl.com,DIRECT
+
+# 2026-11-13: 常规 Apple 系统、账户、App Store、iCloud 服务直连；放在静态国内域名规则之后。
+# 低优先级：上方已有的专用 PROXY / REJECT 优先；不改变节点、DNS 和其他模块。
+# 保留 Claude/ChatGPT 已有 Apple 校验端点，以及 iCloud Private Relay 的代理路径。
+DOMAIN,humb.apple.com,PROXY
+DOMAIN,mask.icloud.com,PROXY
+DOMAIN,mask-h2.icloud.com,PROXY
+DOMAIN,mask-api.icloud.com,PROXY
+DOMAIN-SUFFIX,apple.com,DIRECT
+DOMAIN-SUFFIX,apple.com.cn,DIRECT
+DOMAIN-SUFFIX,icloud.com,DIRECT
+DOMAIN-SUFFIX,icloud.com.cn,DIRECT
+DOMAIN-SUFFIX,icloud-content.com,DIRECT
+DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT
+DOMAIN-SUFFIX,apple-livephotoskit.com,DIRECT
+DOMAIN-SUFFIX,apple-dns.net,DIRECT
+DOMAIN-SUFFIX,cdn-apple.com,DIRECT
+DOMAIN-SUFFIX,mzstatic.com,DIRECT
+DOMAIN-SUFFIX,aaplimg.com,DIRECT
+DOMAIN-SUFFIX,apzones.com,DIRECT
+
+# 2026-11-13: 国内字节服务使用共享 bytedance 域名时优先直连；国际品牌专属域名仍在前面走 PROXY。
+DOMAIN-SUFFIX,bytedance.com,DIRECT
+DOMAIN-SUFFIX,bytedance.net,DIRECT
+DOMAIN-SUFFIX,bytedance.org,DIRECT
 
 # 国内综合纯域名库：补齐未被静态及行业分类覆盖的域名；不引入China.list中宽泛的关键词/UA。
 DOMAIN-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/China/China_Domain.list,DIRECT
